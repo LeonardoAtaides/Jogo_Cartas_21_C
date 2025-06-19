@@ -1,2 +1,2 @@
-# Jogo_21_C
-Código criado a fins didáticos para a implementação do jogo 21 de cartas
+### Jogo de Cartas 21, criado em linguagem C
+
