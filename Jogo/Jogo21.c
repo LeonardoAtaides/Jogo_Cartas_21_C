@@ -192,6 +192,8 @@ void jogar() {
     int n;
     printf("Quantos jogadores (1 a %d)? ", MAX_JOGADORES);
     scanf("%d", &n);
+    while (getchar() != '\n');
+
     if (n < 1 || n > MAX_JOGADORES) {
         printf(RED "Numero invalido de jogadores.\n" RESET);
         return;
@@ -201,6 +203,7 @@ void jogar() {
     for (int i = 0; i < n; i++) {
         printf("Nome do jogador %d: ", i + 1);
         scanf("%s", jogadores[i].nome);
+        while (getchar() != '\n');
         jogadores[i].mao = NULL;
         jogadores[i].pontuacao = 0;
     }
@@ -236,6 +239,7 @@ void jogar() {
 
             printf("1. Comprar carta\n2. Parar\n> ");
             scanf("%d", &opcao);
+            while (getchar() != '\n');
             if (opcao == 1) {
                 adicionar_carta(&jogadores[i].mao, comprar_carta(&baralho));
                 printf(GREEN"\nComprou uma carta\n" RESET);
@@ -265,7 +269,7 @@ void jogar() {
     printf("\n==== RESULTADOS ====\n");
     for (int i = 0; i < n; i++) {
         if (jogadores[i].pontuacao > 21) {
-            printf(ORANGE "%s estourou! Dealer venceu.\n" RESET, jogadores[i].nome);
+            printf(RED "%s estourou!\n" GREEN "Dealer venceu.\n" RESET, jogadores[i].nome);
             salvar_resultado(f, rodada, jogadores[i].nome, "Perdeu (Estourou)");
         } else if (dealer.pontuacao > 21 || jogadores[i].pontuacao > dealer.pontuacao) {
             printf( GREEN "%s venceu o dealer!\n" RESET, jogadores[i].nome);
@@ -274,11 +278,11 @@ void jogar() {
             printf(YELLOW "%s empatou com o dealer.\n" RESET, jogadores[i].nome);
             salvar_resultado(f, rodada, jogadores[i].nome, "Empatou");
         } else {
-            printf("Dealer venceu %s.\n", jogadores[i].nome);
+            printf(GREEN"Dealer venceu %s.\n" RESET, jogadores[i].nome);
             salvar_resultado(f, rodada, jogadores[i].nome, "Perdeu");
         }
     }
-    fprintf(f, "-----------------------------\n\n");
+    fprintf(f, "-------------------------\n\n");
     fclose(f);
 
     for (int i = 0; i < n; i++) liberar_mao(jogadores[i].mao);
@@ -304,7 +308,7 @@ int main() {
     char buffer[10];
     int escolha = 0;
     do {
-        printf("\n==== JOGO 21 ====\n");
+        printf("\n==== BlackJack 21 ====\n");
         printf("1. Jogar\n2. Ver placar\n3. Sair\n> ");
         if (!fgets(buffer, sizeof(buffer), stdin)) break;
         
