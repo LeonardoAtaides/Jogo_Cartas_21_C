@@ -4,9 +4,6 @@
 #include <time.h>
 #include <unistd.h>
 
-
-// DEFINIR CORES DOS PRINTS
-
 #define RED "\x1b[31m"
 #define GREEN "\x1b[32m"
 #define YELLOW "\x1b[33m"
@@ -25,7 +22,6 @@ typedef enum {
     VALETE = 10, DAMA = 10, REI = 10
 } ValorCarta;
 
-// STRUCTS
 typedef struct {
     Naipe naipe;
     ValorCarta valor;
@@ -187,7 +183,7 @@ void jogar() {
     printf("Quantos jogadores (1 a %d)? ", MAX_JOGADORES);
     scanf("%d", &n);
     if (n < 1 || n > MAX_JOGADORES) {
-        printf("Numero invalido de jogadores.\n");
+        printf(RED "Numero invalido de jogadores.\n" RESET);
         return;
     }
 
@@ -208,7 +204,7 @@ void jogar() {
 
     FILE *f = fopen("placar.txt", "a");
     if (!f) {
-        printf( RED "Erro ao abrir placar.txt\n" RESET);
+        printf(RED "Erro ao abrir placar.txt\n" RESET);
         return;
     }
     salvar_cabecalho_rodada(f, rodada);
@@ -224,7 +220,7 @@ void jogar() {
             mostrar_mao_horizontal("Sua mão", jogadores[i].mao);
 
             if (jogadores[i].pontuacao > 21) {
-                printf( RED "Você estourou!\n" RESET);
+                printf(RED"Você estourou!\n"RESET);
                 break;
             }
 
@@ -246,17 +242,16 @@ void jogar() {
     }
     mostrar_mao_horizontal("Dealer", dealer.mao);
 
-    // Resultados
     printf("\n==== RESULTADOS ====\n");
     for (int i = 0; i < n; i++) {
         if (jogadores[i].pontuacao > 21) {
             printf(ORANGE "%s estourou! Dealer venceu.\n" RESET, jogadores[i].nome);
             salvar_resultado(f, rodada, jogadores[i].nome, "Perdeu (Estourou)");
         } else if (dealer.pontuacao > 21 || jogadores[i].pontuacao > dealer.pontuacao) {
-            printf( GREEN "%s venceu o dealer!\n" RESET, jogadores[i].nome);
+            printf(GREEN"%s venceu o dealer!\n"RESET, jogadores[i].nome);
             salvar_resultado(f, rodada, jogadores[i].nome, "Venceu");
         } else if (jogadores[i].pontuacao == dealer.pontuacao) {
-            printf(YELLOW "%s empatou com o dealer.\n" RESET, jogadores[i].nome);
+            printf(YELLOW"%s empatou com o dealer.\n"RESET, jogadores[i].nome);
             salvar_resultado(f, rodada, jogadores[i].nome, "Empatou");
         } else {
             printf("Dealer venceu %s.\n", jogadores[i].nome);
@@ -281,21 +276,26 @@ void mostrar_placar() {
         }
         fclose(f);
     } else {
-        printf(YELLOW "Nenhum placar salvo ainda.\n" RESET);
+        printf(YELLOW"Nenhum placar salvo ainda.\n"RESET);
     }
 }
 
 int main() {
-    int escolha;
+    char buffer[10];
+    int escolha = 0;
     do {
         printf("\n==== JOGO 21 ====\n");
         printf("1. Jogar\n2. Ver placar\n3. Sair\n> ");
-        scanf("%d", &escolha);
+        if (!fgets(buffer, sizeof(buffer), stdin)) break;
+        if (sscanf(buffer, "%d", &escolha) != 1) {
+            printf(RED"Entrada invalida! Digite um numero.\n"RESET);
+            continue;
+        }
         switch (escolha) {
             case 1: jogar(); break;
             case 2: mostrar_placar(); break;
             case 3: printf("Saindo...\n"); break;
-            default: printf(RED "Opcao invalida.\n" RESET); break;
+            default: printf(RED"Opcao invalida.\n"RESET); break;
         }
     } while (escolha != 3);
     return 0;
