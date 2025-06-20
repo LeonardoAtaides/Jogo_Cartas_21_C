@@ -126,6 +126,16 @@ void Embaralhar_Cartas_animacao() {
     printf("\n");
 }
 
+void Limpar_Placar() {
+    printf("Limpando Placar");
+    for (int i = 0; i < 3; i++) {
+        fflush(stdout);
+        sleep(1);
+        printf(".");
+    }
+    printf("\n");
+}
+
 void Sair() {
     printf("Saindo");
     for (int i = 0; i < 3; i++) {
@@ -242,7 +252,7 @@ void jogar() {
             while (getchar() != '\n');
             if (opcao == 1) {
                 adicionar_carta(&jogadores[i].mao, comprar_carta(&baralho));
-                printf(GREEN "\n+1 carta\n" RESET);
+                printf(GREEN "\n+ 1 carta\n" RESET);
             }
         } while (opcao != 2);
     }
@@ -269,7 +279,7 @@ void jogar() {
     printf("\n==== RESULTADOS ====\n");
     for (int i = 0; i < n; i++) {
         if (jogadores[i].pontuacao > 21) {
-            printf(RED "%s estourou!" GREEN "Dealer venceu.\n" RESET, jogadores[i].nome);
+            printf(RED "%s estourou! " GREEN "Dealer venceu.\n" RESET, jogadores[i].nome);
             salvar_resultado(f, rodada, jogadores[i].nome, "Perdeu (Estourou)");
         } else if (dealer.pontuacao > 21 || jogadores[i].pontuacao > dealer.pontuacao) {
             printf( GREEN "%s venceu " RESET "o dealer!\n" RESET, jogadores[i].nome);
@@ -327,7 +337,7 @@ int main() {
             case 2: mostrar_placar(); break;
             case 3:
                 if (remove("placar.txt") == 0) {
-                    printf("Placar Limpo!\n");
+                    Limpar_Placar();
                 } 
                 Sair();
                 break;
