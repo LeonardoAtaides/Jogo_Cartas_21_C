@@ -237,24 +237,44 @@ void jogar() {
         adicionar_carta(&jogadores[i].mao, comprar_carta(&baralho));
 
         printf("\n==== Vez de %s ====\n", jogadores[i].nome);
-        int opcao;
-        do {
-            jogadores[i].pontuacao = calcular_pontuacao(jogadores[i].mao);
-            mostrar_mao_horizontal("Sua mao", jogadores[i].mao);
+        jogadores[i].pontuacao = calcular_pontuacao(jogadores[i].mao);
+        mostrar_mao_horizontal("Sua mao", jogadores[i].mao); 
 
+        int opcao = 0;
+
+        do {
             if (jogadores[i].pontuacao > 21) {
                 printf(RED "\nEstourou!\n" RESET);
                 break;
             }
 
-            printf("1. Comprar carta\n2. Parar\n> ");
-            scanf("%d", &opcao);
-            while (getchar() != '\n');
+            char buffer[10];
+            do {
+                printf("1. Comprar carta\n2. Parar\n> ");
+                if (!fgets(buffer, sizeof(buffer), stdin)) {
+                    printf(RED "Erro de leitura. Tente novamente.\n" RESET);
+                    continue;
+                }
+                if (sscanf(buffer, "%d", &opcao) != 1 || (opcao != 1 && opcao != 2)) {
+                    printf(RED "Opcao invalida! Digite 1 ou 2.\n" RESET);
+                    continue;
+                }
+                break; 
+            } while (1);
+
             if (opcao == 1) {
                 adicionar_carta(&jogadores[i].mao, comprar_carta(&baralho));
+                jogadores[i].pontuacao = calcular_pontuacao(jogadores[i].mao);
                 printf(GREEN "\n+ 1 carta\n" RESET);
+                mostrar_mao_horizontal("Sua mao", jogadores[i].mao);
+
+                if (jogadores[i].pontuacao > 21) {
+                    printf(RED "\nEstourou!\n" RESET);
+                    break;
+                }
             }
-        } while (opcao != 2);
+
+        } while (opcao != 2 && jogadores[i].pontuacao <= 21);
     }
 
     printf("\n==== Vez de Dealer ====\n");
