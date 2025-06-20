@@ -230,7 +230,7 @@ void jogar() {
         do {
             jogadores[i].pontuacao = calcular_pontuacao(jogadores[i].mao);
             printf("\n==== Vez de %s ====\n", jogadores[i].nome);
-            mostrar_mao_horizontal("Sua mão", jogadores[i].mao);
+            mostrar_mao_horizontal("Sua mao", jogadores[i].mao);
 
             if (jogadores[i].pontuacao > 21) {
                 printf( RED "\nVoce estourou!\n" RESET);
