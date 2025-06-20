@@ -307,10 +307,17 @@ int main() {
         printf("\n==== JOGO 21 ====\n");
         printf("1. Jogar\n2. Ver placar\n3. Sair\n> ");
         if (!fgets(buffer, sizeof(buffer), stdin)) break;
+        
+        if (buffer[0] == '\n') {
+            printf(RED"\nEntrada invalida! Digite um numero.\n" RESET);
+            continue;
+        }
+        
         if (sscanf(buffer, "%d", &escolha) != 1) {
             printf(RED"\nEntrada invalida! Digite um numero.\n" RESET);
             continue;
         }
+        
         switch (escolha) {
             case 1: jogar(); break;
             case 2: mostrar_placar(); break;
