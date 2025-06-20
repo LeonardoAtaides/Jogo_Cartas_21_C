@@ -226,14 +226,14 @@ void jogar() {
         adicionar_carta(&jogadores[i].mao, comprar_carta(&baralho));
         adicionar_carta(&jogadores[i].mao, comprar_carta(&baralho));
 
+        printf("\n==== Vez de %s ====\n", jogadores[i].nome);
         int opcao;
         do {
             jogadores[i].pontuacao = calcular_pontuacao(jogadores[i].mao);
-            printf("\n==== Vez de %s ====\n", jogadores[i].nome);
             mostrar_mao_horizontal("Sua mao", jogadores[i].mao);
 
             if (jogadores[i].pontuacao > 21) {
-                printf( RED "\nEstourou!\n" RESET);
+                printf(RED "\nEstourou!\n" RESET);
                 break;
             }
 
@@ -242,7 +242,7 @@ void jogar() {
             while (getchar() != '\n');
             if (opcao == 1) {
                 adicionar_carta(&jogadores[i].mao, comprar_carta(&baralho));
-                printf(GREEN"\n+ 1 Carta\n" RESET);
+                printf(GREEN "\n+1 carta\n" RESET);
             }
         } while (opcao != 2);
     }
