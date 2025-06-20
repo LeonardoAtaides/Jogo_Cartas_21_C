@@ -2,6 +2,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#include <unistd.h>
+
+#define MAX_JOGADORES 4
 
 typedef enum {
     COPAS, OUROS, ESPADAS, PAUS
@@ -43,6 +46,7 @@ const char *nome_naipe(Naipe n) {
 const char *nome_valor(int valor) {
     switch(valor) {
         case 1: return "As";
+        case 10: return "10";
         case 11: return "Valete";
         case 12: return "Dama";
         case 13: return "Rei";
@@ -77,12 +81,15 @@ int calcular_pontuacao(NoCarta *mao) {
     return total;
 }
 
-void mostrar_mao(const char *nome, NoCarta *mao) {
-    printf("\nMao de %s:\n", nome);
-    while (mao) {
-        printf("- %s de %s\n", nome_valor(mao->carta.valor), nome_naipe(mao->carta.naipe));
-        mao = mao->prox;
+void mostrar_mao_horizontal(const char *nome, NoCarta *mao) {
+    printf("\n%s:\n", nome);
+    NoCarta *temp = mao;
+    while (temp) {
+        printf("[%s de %s] ", nome_valor(temp->carta.valor), nome_naipe(temp->carta.naipe));
+        temp = temp->prox;
     }
+    int total = calcular_pontuacao(mao);
+    printf("=> Total: %d\n", total);
 }
 
 void liberar_mao(NoCarta *mao) {
@@ -104,7 +111,19 @@ NoCarta *criar_baralho() {
     return baralho;
 }
 
+void animar_embaralhamento() {
+    printf("Embaralhando");
+    for (int i = 0; i < 3; i++) {
+        fflush(stdout);
+        sleep(1);
+        printf(".");
+    }
+    printf("\n");
+}
+
 void embaralhar(NoCarta **baralho) {
+    animar_embaralhamento();
+
     NoCarta *array[52];
     int i = 0;
     while (*baralho) {
@@ -130,18 +149,123 @@ Carta comprar_carta(NoCarta **baralho) {
     return c;
 }
 
-void salvar_placar(const char *nome, int pontos) {
-    FILE *f = fopen("placar.txt", "a");
-    if (f) {
-        fprintf(f, "%s: %d\n", nome, pontos);
-        fclose(f);
+int ler_numero_rodada() {
+    FILE *f = fopen("placar.txt", "r");
+    if (!f) return 1; 
+
+    int maior = 0, rodada;
+    char linha[256];
+    while (fgets(linha, sizeof(linha), f)) {
+        if (sscanf(linha, "==========Rodada %d===========", &rodada) == 1) {
+            if (rodada > maior) maior = rodada;
+        }
     }
+    fclose(f);
+    return maior + 1;
+}
+
+void salvar_cabecalho_rodada(FILE *f, int rodada) {
+    fprintf(f, "==========Rodada %d===========\n", rodada);
+}
+
+void salvar_resultado(FILE *f, int rodada, const char *nome, const char *resultado) {
+    fprintf(f, "%s: %s\n", nome, resultado);
+}
+
+void jogar() {
+    srand(time(NULL));
+    int n;
+    printf("Quantos jogadores (1 a %d)? ", MAX_JOGADORES);
+    scanf("%d", &n);
+    if (n < 1 || n > MAX_JOGADORES) {
+        printf("Numero invalido de jogadores.\n");
+        return;
+    }
+
+    Jogador jogadores[MAX_JOGADORES];
+    for (int i = 0; i < n; i++) {
+        printf("Nome do jogador %d: ", i + 1);
+        scanf("%s", jogadores[i].nome);
+        jogadores[i].mao = NULL;
+        jogadores[i].pontuacao = 0;
+    }
+
+    Jogador dealer = {"Dealer", NULL, 0};
+    NoCarta *baralho = criar_baralho();
+    embaralhar(&baralho);
+
+    int rodada = ler_numero_rodada();
+    printf("\n==== RODADA %d ====\n", rodada);
+
+    FILE *f = fopen("placar.txt", "a");
+    if (!f) {
+        printf("Erro ao abrir placar.txt\n");
+        return;
+    }
+    salvar_cabecalho_rodada(f, rodada);
+
+    for (int i = 0; i < n; i++) {
+        adicionar_carta(&jogadores[i].mao, comprar_carta(&baralho));
+        adicionar_carta(&jogadores[i].mao, comprar_carta(&baralho));
+
+        int opcao;
+        do {
+            jogadores[i].pontuacao = calcular_pontuacao(jogadores[i].mao);
+            printf("\n==== VEZ DE %s ====\n", jogadores[i].nome);
+            mostrar_mao_horizontal("Sua mão", jogadores[i].mao);
+
+            if (jogadores[i].pontuacao > 21) {
+                printf("Você estourou!\n");
+                break;
+            }
+
+            printf("1. Comprar carta\n2. Parar\n> ");
+            scanf("%d", &opcao);
+            if (opcao == 1)
+                adicionar_carta(&jogadores[i].mao, comprar_carta(&baralho));
+        } while (opcao != 2);
+    }
+
+    printf("\n==== DEALER JOGANDO... ====\n");
+    sleep(1);
+    adicionar_carta(&dealer.mao, comprar_carta(&baralho));
+    adicionar_carta(&dealer.mao, comprar_carta(&baralho));
+    while ((dealer.pontuacao = calcular_pontuacao(dealer.mao)) < 17) {
+        printf("Dealer compra uma carta...\n");
+        sleep(1);
+        adicionar_carta(&dealer.mao, comprar_carta(&baralho));
+    }
+    mostrar_mao_horizontal("Dealer", dealer.mao);
+
+    // Resultados
+    printf("\n==== RESULTADOS ====\n");
+    for (int i = 0; i < n; i++) {
+        if (jogadores[i].pontuacao > 21) {
+            printf("%s estourou! Dealer venceu.\n", jogadores[i].nome);
+            salvar_resultado(f, rodada, jogadores[i].nome, "Perdeu (Estourou)");
+        } else if (dealer.pontuacao > 21 || jogadores[i].pontuacao > dealer.pontuacao) {
+            printf("%s venceu o dealer!\n", jogadores[i].nome);
+            salvar_resultado(f, rodada, jogadores[i].nome, "Venceu");
+        } else if (jogadores[i].pontuacao == dealer.pontuacao) {
+            printf("%s empatou com o dealer.\n", jogadores[i].nome);
+            salvar_resultado(f, rodada, jogadores[i].nome, "Empatou");
+        } else {
+            printf("Dealer venceu %s.\n", jogadores[i].nome);
+            salvar_resultado(f, rodada, jogadores[i].nome, "Perdeu");
+        }
+    }
+    fprintf(f, "-----------------------------\n\n");
+    fclose(f);
+
+    for (int i = 0; i < n; i++) liberar_mao(jogadores[i].mao);
+    liberar_mao(dealer.mao);
+    liberar_mao(baralho);
 }
 
 void mostrar_placar() {
     FILE *f = fopen("placar.txt", "r");
     if (f) {
-        char linha[100];
+        char linha[256];
         printf("\n==== PLACAR ====\n");
         while (fgets(linha, sizeof(linha), f)) {
             printf("%s", linha);
@@ -152,66 +276,11 @@ void mostrar_placar() {
     }
 }
 
-void jogar() {
-    srand(time(NULL));
-    NoCarta *baralho = criar_baralho();
-    embaralhar(&baralho);
-
-    Jogador jogador = {"Jogador", NULL, 0};
-    Jogador dealer = {"Dealer", NULL, 0};
-
-    adicionar_carta(&jogador.mao, comprar_carta(&baralho));
-    adicionar_carta(&jogador.mao, comprar_carta(&baralho));
-    adicionar_carta(&dealer.mao, comprar_carta(&baralho));
-
-    int opcao;
-    do {
-        jogador.pontuacao = calcular_pontuacao(jogador.mao);
-        mostrar_mao(jogador.nome, jogador.mao);
-        printf("Total: %d\n", jogador.pontuacao);
-
-        if (jogador.pontuacao > 21) {
-            printf("Voce estourou!\n");
-            break;
-        }
-
-        printf("1. Comprar carta\n2. Parar\n> ");
-        scanf("%d", &opcao);
-
-        if (opcao == 1) adicionar_carta(&jogador.mao, comprar_carta(&baralho));
-    } while (opcao != 2);
-
-    if (jogador.pontuacao <= 21) {
-        while ((dealer.pontuacao = calcular_pontuacao(dealer.mao)) < 17) {
-            adicionar_carta(&dealer.mao, comprar_carta(&baralho));
-        }
-        mostrar_mao(dealer.nome, dealer.mao);
-        printf("Dealer total: %d\n", dealer.pontuacao);
-
-        if (dealer.pontuacao > 21 || jogador.pontuacao > dealer.pontuacao) {
-            printf("Voce venceu!\n");
-            salvar_placar(jogador.nome, 1);
-        } else if (dealer.pontuacao == jogador.pontuacao) {
-            printf("Empate!\n");
-            salvar_placar(jogador.nome, 0);
-        } else {
-            printf("Dealer venceu!\n");
-            salvar_placar(jogador.nome, 0);
-        }
-    } else {
-        salvar_placar(jogador.nome, 0);
-    }
-
-    liberar_mao(jogador.mao);
-    liberar_mao(dealer.mao);
-    liberar_mao(baralho);
-}
-
 int main() {
     int escolha;
     do {
-        printf("\n==== JOGO 21 ====");
-        printf("\n1. Jogar\n2. Ver placar\n3. Sair\n> ");
+        printf("\n==== JOGO 21 ====\n");
+        printf("1. Jogar\n2. Ver placar\n3. Sair\n> ");
         scanf("%d", &escolha);
         switch (escolha) {
             case 1: jogar(); break;
