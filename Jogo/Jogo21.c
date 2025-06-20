@@ -233,7 +233,7 @@ void jogar() {
             mostrar_mao_horizontal("Sua mao", jogadores[i].mao);
 
             if (jogadores[i].pontuacao > 21) {
-                printf( RED "\nVoce estourou!\n" RESET);
+                printf( RED "\nEstourou!\n" RESET);
                 break;
             }
 
@@ -242,7 +242,7 @@ void jogar() {
             while (getchar() != '\n');
             if (opcao == 1) {
                 adicionar_carta(&jogadores[i].mao, comprar_carta(&baralho));
-                printf(GREEN"\nComprou uma carta\n" RESET);
+                printf(GREEN"\n+ 1 Carta\n" RESET);
             }
         } while (opcao != 2);
     }
@@ -262,23 +262,23 @@ void jogar() {
         opcao = 1;
         if (opcao == 1) {
             adicionar_carta(&dealer.mao, comprar_carta(&baralho));
-            printf(GREEN "\nDealer comprou uma carta\n" RESET);
+            printf(GREEN "\n+ 1 Carta\n" RESET);
         }
     } while (opcao != 2);
 
     printf("\n==== RESULTADOS ====\n");
     for (int i = 0; i < n; i++) {
         if (jogadores[i].pontuacao > 21) {
-            printf(RED "%s estourou!\n" GREEN "Dealer venceu.\n" RESET, jogadores[i].nome);
+            printf(RED "%s estourou!" GREEN "Dealer venceu.\n" RESET, jogadores[i].nome);
             salvar_resultado(f, rodada, jogadores[i].nome, "Perdeu (Estourou)");
         } else if (dealer.pontuacao > 21 || jogadores[i].pontuacao > dealer.pontuacao) {
-            printf( GREEN "%s venceu o dealer!\n" RESET, jogadores[i].nome);
+            printf( GREEN "%s venceu " RESET "o dealer!\n" RESET, jogadores[i].nome);
             salvar_resultado(f, rodada, jogadores[i].nome, "Venceu");
         } else if (jogadores[i].pontuacao == dealer.pontuacao) {
             printf(YELLOW "%s empatou com o dealer.\n" RESET, jogadores[i].nome);
             salvar_resultado(f, rodada, jogadores[i].nome, "Empatou");
         } else {
-            printf(GREEN"Dealer venceu %s.\n" RESET, jogadores[i].nome);
+            printf(GREEN"Dealer venceu " RESET "%s.\n", jogadores[i].nome);
             salvar_resultado(f, rodada, jogadores[i].nome, "Perdeu");
         }
     }
