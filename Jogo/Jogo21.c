@@ -116,8 +116,18 @@ NoCarta *criar_baralho() {
     return baralho;
 }
 
-void animar_embaralhamento() {
-    printf("Embaralhando");
+void Embaralhar_Cartas_animacao() {
+    printf("\nEmbaralhando Cartas");
+    for (int i = 0; i < 3; i++) {
+        fflush(stdout);
+        sleep(1);
+        printf(".");
+    }
+    printf("\n");
+}
+
+void Sair() {
+    printf("Saindo");
     for (int i = 0; i < 3; i++) {
         fflush(stdout);
         sleep(1);
@@ -127,7 +137,7 @@ void animar_embaralhamento() {
 }
 
 void embaralhar(NoCarta **baralho) {
-    animar_embaralhamento();
+    Embaralhar_Cartas_animacao();
 
     NoCarta *array[52];
     int i = 0;
@@ -161,7 +171,7 @@ int ler_numero_rodada() {
     int maior = 0, rodada;
     char linha[256];
     while (fgets(linha, sizeof(linha), f)) {
-        if (sscanf(linha, "==========Rodada %d===========", &rodada) == 1) {
+        if (sscanf(linha, "======  Rodada %d ======", &rodada) == 1) {
             if (rodada > maior) maior = rodada;
         }
     }
@@ -170,7 +180,7 @@ int ler_numero_rodada() {
 }
 
 void salvar_cabecalho_rodada(FILE *f, int rodada) {
-    fprintf(f, "==========Rodada %d===========\n", rodada);
+    fprintf(f, "====== Rodada %d ======\n", rodada);
 }
 
 void salvar_resultado(FILE *f, int rodada, const char *nome, const char *resultado) {
@@ -183,7 +193,7 @@ void jogar() {
     printf("Quantos jogadores (1 a %d)? ", MAX_JOGADORES);
     scanf("%d", &n);
     if (n < 1 || n > MAX_JOGADORES) {
-        printf("Numero invalido de jogadores.\n");
+        printf(RED "Numero invalido de jogadores.\n" RESET);
         return;
     }
 
@@ -216,11 +226,11 @@ void jogar() {
         int opcao;
         do {
             jogadores[i].pontuacao = calcular_pontuacao(jogadores[i].mao);
-            printf("\n==== VEZ DE %s ====\n", jogadores[i].nome);
+            printf("\n==== Vez de %s ====\n", jogadores[i].nome);
             mostrar_mao_horizontal("Sua mão", jogadores[i].mao);
 
             if (jogadores[i].pontuacao > 21) {
-                printf( RED "Você estourou!\n" RESET);
+                printf( RED "\nVoce estourou!\n" RESET);
                 break;
             }
 
@@ -228,21 +238,29 @@ void jogar() {
             scanf("%d", &opcao);
             if (opcao == 1) {
                 adicionar_carta(&jogadores[i].mao, comprar_carta(&baralho));
-                printf(GREEN "Comprou uma carta\n" RESET);
+                printf(GREEN"\nComprou uma carta\n" RESET);
             }
         } while (opcao != 2);
     }
 
-    printf("\n==== DEALER JOGANDO... ====\n");
+    printf("\n==== Vez de Dealer ====\n");
+    Embaralhar_Cartas_animacao();
     sleep(1);
     adicionar_carta(&dealer.mao, comprar_carta(&baralho));
     adicionar_carta(&dealer.mao, comprar_carta(&baralho));
-    while ((dealer.pontuacao = calcular_pontuacao(dealer.mao)) < 17) {
-        printf("Dealer compra uma carta...\n");
+    int opcao;
+    do {
+        dealer.pontuacao = calcular_pontuacao(dealer.mao);
+        mostrar_mao_horizontal("Dealer", dealer.mao);
+
+        if (dealer.pontuacao >= 17) break;
         sleep(1);
-        adicionar_carta(&dealer.mao, comprar_carta(&baralho));
-    }
-    mostrar_mao_horizontal("Dealer", dealer.mao);
+        opcao = 1;
+        if (opcao == 1) {
+            adicionar_carta(&dealer.mao, comprar_carta(&baralho));
+            printf(GREEN "\nDealer comprou uma carta\n" RESET);
+        }
+    } while (opcao != 2);
 
     printf("\n==== RESULTADOS ====\n");
     for (int i = 0; i < n; i++) {
@@ -290,7 +308,7 @@ int main() {
         printf("1. Jogar\n2. Ver placar\n3. Sair\n> ");
         if (!fgets(buffer, sizeof(buffer), stdin)) break;
         if (sscanf(buffer, "%d", &escolha) != 1) {
-            printf(RED "Entrada invalida! Digite um numero.\n" RESET);
+            printf(RED"\nEntrada invalida! Digite um numero.\n" RESET);
             continue;
         }
         switch (escolha) {
@@ -298,11 +316,9 @@ int main() {
             case 2: mostrar_placar(); break;
             case 3:
                 if (remove("placar.txt") == 0) {
-                    printf("Arquivo placar.txt apagado.\n");
-                } else {
-                    printf("Nenhum arquivo placar.txt para apagar.\n");
-                }
-                printf("Saindo...\n");
+                    printf("Placar Limpo!\n");
+                } 
+                Sair();
                 break;
             default: printf(RED "Opcao invalida.\n" RESET); break;
         }
