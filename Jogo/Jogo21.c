@@ -151,20 +151,25 @@ void embaralhar(NoCarta **baralho) {
 
     NoCarta *array[52];
     int i = 0;
-    while (*baralho) {
+
+    while (*baralho && i < 52) {
         array[i++] = *baralho;
         *baralho = (*baralho)->prox;
     }
-    for (int j = 0; j < 52; j++) {
-        int r = rand() % 52;
+
+    for (int j = i - 1; j > 0; j--) {
+        int r = rand() % (j + 1);
         NoCarta *tmp = array[j];
         array[j] = array[r];
         array[r] = tmp;
     }
-    for (int j = 0; j < 51; j++) array[j]->prox = array[j+1];
-    array[51]->prox = NULL;
-    *baralho = array[0];
+
+    for (int j = 0; j < i - 1; j++) array[j]->prox = array[j + 1];
+    array[i - 1]->prox = NULL;
+
+    *baralho = array[0]; 
 }
+
 
 Carta comprar_carta(NoCarta **baralho) {
     Carta c = (*baralho)->carta;
