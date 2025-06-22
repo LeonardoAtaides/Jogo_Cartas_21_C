@@ -16,7 +16,7 @@ Este projeto implementa o clássico jogo de cartas Blackjack (21) em linguagem C
 - **Gerenciamento automático do baralho** com pilha de descarte
 - **Cálculo automático de pontuação** considerando as regras do Ás (1 ou 11)
 
-## 🎮 Como Jogar
+##  Como Jogar
 
 ### Regras do Jogo
 - O objetivo é obter uma pontuação mais próxima de 21 sem ultrapassá-la
@@ -85,7 +85,7 @@ Jogo_Cartas_21_C/
 ### Sistema de Arquivos
 - **placar.txt**: Arquivo que armazena o histórico de rodadas e resultados
 
-## 🎨 Interface
+##  Interface
 
 O jogo utiliza códigos ANSI para colorir a saída:
 - 🔴 **Vermelho**: Mensagens de erro e derrotas
