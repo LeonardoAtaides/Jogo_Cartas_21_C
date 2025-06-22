@@ -92,12 +92,6 @@ Este projeto é ideal para fins didáticos e demonstra:
 
 ---
 
-## 📌 Créditos
-
-Desenvolvido por [Seu Nome Aqui] — Projeto acadêmico de programação em C.
-
----
-
 ## 🛠️ Sugestões Futuras
 
 - Modo com apostas
