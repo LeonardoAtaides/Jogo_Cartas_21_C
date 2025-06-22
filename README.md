@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 
 # 🃏 Jogo de Cartas - BlackJack 21 (em C)
 
@@ -29,7 +30,24 @@ JOGO_CARTAS_21_C/
 ```bash
 cd Jogo
 gcc Jogo21.c -o Jogo21
+=======
 ```
+==== BlackJack 21 ====
+1. Jogar
+2. Ver placar
+3. Sair
+> 1
+Quantos jogadores (1 a 4)? 2
+Nome do jogador 1: Alice
+Nome do jogador 2: Bob
+
+==== Vez de Alice ====
+Sua mao:
+[10 de Copas] [As de Ouros] => Total: 21
+1. Comprar carta
+2. Parar
+> 2
+...
 
 ### ▶️ Execução
 ```bash
