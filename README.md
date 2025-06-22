@@ -1,79 +1,124 @@
-<<<<<<< HEAD
+#  Jogo de Cartas 21 (Blackjack)
 
-# 🃏 Jogo de Cartas - BlackJack 21 (em C)
+Um jogo de Blackjack implementado em C com interface de terminal colorida e sistema de placar persistente.
 
-Este é um projeto de terminal em C que simula o famoso jogo **BlackJack (21)**, com suporte para até 4 jogadores e um dealer automático.
+##  Descrição
 
----
+Este projeto implementa o clássico jogo de cartas Blackjack (21) em linguagem C. O jogo permite que até 4 jogadores compitam contra o dealer, com um sistema de pontuação que salva automaticamente os resultados de cada rodada.
 
-## 📁 Estrutura de Pastas
+##  Funcionalidades
 
-```
-JOGO_CARTAS_21_C/
-│
-├── Jogo/
-│   ├── Jogo21.c        # Código-fonte principal do jogo
-│
-├── README.md           # Este arquivo
-├── .gitignore          # Arquivo para ignorar binários, etc.
-```
+- **Jogo completo de Blackjack** com regras tradicionais
+- **Suporte a múltiplos jogadores** (1 a 4 jogadores)
+- **Interface colorida** no terminal para melhor experiência visual
+- **Sistema de placar persistente** que salva os resultados em arquivo
+- **Animações** durante o embaralhamento das cartas
+- **Gerenciamento automático do baralho** com pilha de descarte
+- **Cálculo automático de pontuação** considerando as regras do Ás (1 ou 11)
 
----
+## 🎮 Como Jogar
 
-## 🚀 Como Compilar e Executar
+### Regras do Jogo
+- O objetivo é obter uma pontuação mais próxima de 21 sem ultrapassá-la
+- Cartas numéricas valem seu valor de face (2-10)
+- Figuras (Valete, Dama, Rei) valem 10 pontos
+- O Ás vale 1 ou 11 pontos (automaticamente ajustado para o melhor valor)
+- O dealer deve comprar cartas até atingir pelo menos 17 pontos
 
-### 🔧 Requisitos
+### Controles
+- **1**: Comprar uma carta
+- **2**: Parar (manter a mão atual)
+- **1-3**: Navegar pelo menu principal
+
+##  Como Compilar e Executar
+
+### Pré-requisitos
 - Compilador C (GCC recomendado)
-- Terminal (Linux, macOS ou Git Bash no Windows)
+- Sistema operacional com suporte a ANSI escape codes (Linux, macOS, Windows 10+)
 
-### 💻 Compilação (dentro da pasta `Jogo/`)
+### Compilação
 ```bash
-cd Jogo
-gcc Jogo21.c -o Jogo21
-=======
-```
-==== BlackJack 21 ====
-1. Jogar
-2. Ver placar
-3. Sair
-> 1
-Quantos jogadores (1 a 4)? 2
-Nome do jogador 1: Alice
-Nome do jogador 2: Bob
+# Navegue até a pasta do projeto
+cd Jogo_Cartas_21_C
 
-==== Vez de Alice ====
-Sua mao:
-[10 de Copas] [As de Ouros] => Total: 21
-1. Comprar carta
-2. Parar
-> 2
-...
+# Compile o programa
+gcc -o jogo21 Jogo/Jogo21.c
 
-### ▶️ Execução
-```bash
-./Jogo21
-```
-Ou, no Windows:
-```bash
-Jogo21.exe
+# Execute o jogo
+./jogo21
 ```
 
----
+### Para Windows (PowerShell)
+```powershell
+# Navegue até a pasta do projeto
+cd Jogo_Cartas_21_C
 
-## 🎮 Funcionalidades
+# Compile o programa
+gcc -o jogo21.exe Jogo/Jogo21.c
 
-- Jogadores e Dealer com turnos individuais
-- Sistema de pontuação com AS valendo 1 ou 11
-- Exibição das cartas e somatório no terminal
-- Registro automático de cada rodada em `placar.txt`
-- Exibição do histórico de partidas
+# Execute o jogo
+.\jogo21.exe
+```
 
----
+##  Estrutura do Projeto
 
-## 🗂️ Arquivo de Placar
+```
+Jogo_Cartas_21_C/
+├── Jogo/
+│   └── Jogo21.c          # Código fonte principal
+├── .gitignore            # Arquivos ignorados pelo Git
+└── README.md             # Este arquivo
+```
 
-O jogo salva o resultado de cada rodada no arquivo `placar.txt`, com informações como:
+##  Funcionalidades Técnicas
 
+### Estruturas de Dados
+- **Carta**: Representa uma carta com naipe e valor
+- **NoCarta**: Nó de lista encadeada para cartas
+- **Jogador**: Contém nome, mão de cartas e pontuação
+
+### Algoritmos Implementados
+- **Embaralhamento**: Algoritmo Fisher-Yates para embaralhar o baralho
+- **Cálculo de pontuação**: Lógica inteligente para o valor do Ás
+- **Gerenciamento de memória**: Alocação e liberação dinâmica de cartas
+
+### Sistema de Arquivos
+- **placar.txt**: Arquivo que armazena o histórico de rodadas e resultados
+
+## 🎨 Interface
+
+O jogo utiliza códigos ANSI para colorir a saída:
+- 🔴 **Vermelho**: Mensagens de erro e derrotas
+- 🟢 **Verde**: Mensagens de sucesso e vitórias  
+- 🟡 **Amarelo**: Informações e empates
+- 🟠 **Laranja**: Cabeçalhos de rodadas
+
+##  Sistema de Placar
+
+O jogo mantém automaticamente um arquivo `placar.txt` que registra:
 - Número da rodada
-- Nome dos jogadores
-- Resultado: `Venceu`, `Perdeu`, `Empatou`
+- Nome de cada jogador
+- Resultado (Venceu/Perdeu/Empatou)
+- Motivo da derrota (ex: "Estourou")
+
+##  Personalização
+
+Você pode modificar as seguintes constantes no código:
+- `MAX_JOGADORES`: Número máximo de jogadores (atualmente 4)
+- Cores ANSI: Definições de cores no início do arquivo
+- Regras do dealer: Pontuação mínima para o dealer parar (atualmente 17)
+
+##  Solução de Problemas
+
+### Problemas de Compilação
+- Certifique-se de ter o GCC instalado
+- No Windows, use MinGW ou WSL para melhor compatibilidade
+
+### Problemas de Cores
+- Se as cores não aparecerem, seu terminal pode não suportar ANSI escape codes
+- No Windows, certifique-se de que o terminal suporta cores ANSI
+
+### Problemas de Arquivo
+- O arquivo `placar.txt` é criado automaticamente na primeira execução
+- Certifique-se de que o programa tem permissão de escrita no diretório
+
