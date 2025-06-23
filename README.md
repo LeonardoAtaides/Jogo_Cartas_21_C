@@ -39,10 +39,10 @@ Este projeto implementa o clássico jogo de cartas Blackjack (21) em linguagem C
 ### Compilação
 ```bash
 # Navegue até a pasta do projeto
-cd Jogo_Cartas_21_C
+cd Jogo
 
 # Compile o programa
-gcc -o jogo21 Jogo/Jogo21.c
+gcc -o jogo21 Jogo21.c
 
 # Execute o jogo
 ./jogo21
@@ -51,10 +51,10 @@ gcc -o jogo21 Jogo/Jogo21.c
 ### Para Windows (PowerShell)
 ```powershell
 # Navegue até a pasta do projeto
-cd Jogo_Cartas_21_C
+cd Jogo
 
 # Compile o programa
-gcc -o jogo21.exe Jogo/Jogo21.c
+gcc -o jogo21.exe Jogo21.c
 
 # Execute o jogo
 .\jogo21.exe
